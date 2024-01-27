@@ -6,14 +6,6 @@ st.write("""
 Establecer características del bono
 """)
 
-# Setting pages
-if st.button("Settings"):
-    st.switch_page("app.py")
-
-if st.button("Sensitivity Measures"):
-    st.switch_page("pages/test.py")
-
-
 # Setting type of bond
 type_bond = st.selectbox(
     'Tipo de bono',
@@ -29,5 +21,7 @@ with issue_date: # Set issue_date input
 with expiration_date: # Set expiration_date input
     fecha_fin = st.date_input('Fecha de vencimiento')
 
-
-
+#st.write(type(fecha_fin))
+if st.button('calcular'):
+    
+    st.write((fecha_fin-fecha_inicio).days)

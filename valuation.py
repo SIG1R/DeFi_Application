@@ -6,6 +6,7 @@ def zero_coupon(rate, time, duration):
     time -> tiempo que ha pasado
     total_duration -> tiempo de duración del bono
     """
+    assert time <= duration, 'La duración del bono no puede ser menor que el tiempo transcurrido'
 
     time_diff = duration - time
 
