@@ -39,4 +39,4 @@ if st.button('calcular'):
     #st.write(f'Siguientes cobros del cupón {sm.duration(expiration_date,0)}')
     daily_rate = sm.convertion_rate(actual_rate)*100
     st.write(f'La tasa diaria es {daily_rate}')
-    st.write(f'{sm.duration(expiration_date, 5.75, daily_rate)}')
+    st.write(f'{sm.duration_convexity(expiration_date, 5.75, daily_rate)}')
