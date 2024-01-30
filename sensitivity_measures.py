@@ -38,3 +38,7 @@ def duration_convexity(expiration_date, FCB, daily_rate):
 
     return duration, convexity
 
+def change_price_bond(duration, convexity, basic_points):
+    
+    calc = -duration*basic_points+(1/2)*convexity*(basic_points**2)
+    return calc*100
