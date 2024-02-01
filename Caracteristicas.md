@@ -24,7 +24,7 @@ Bono ^4mZdHspz
 
 + Valoración ^vyNjXBXV
 
-- Tasa actual ^6IyM5ZtX
+- Tasa de mercado ^6IyM5ZtX
 
 - Variables ^YXJnoTh2
 
@@ -365,8 +365,8 @@ Bono ^4mZdHspz
 		},
 		{
 			"type": "text",
-			"version": 230,
-			"versionNonce": 963515497,
+			"version": 241,
+			"versionNonce": 285450857,
 			"isDeleted": false,
 			"id": "6IyM5ZtX",
 			"fillStyle": "solid",
@@ -376,27 +376,27 @@ Bono ^4mZdHspz
 			"opacity": 100,
 			"angle": 0,
 			"x": -175.30265995822833,
-			"y": -160.1850802474739,
+			"y": -161.1850802474739,
 			"strokeColor": "#1e1e1e",
 			"backgroundColor": "transparent",
-			"width": 79.99238586425781,
+			"width": 104.96000671386719,
 			"height": 13.670953486408976,
 			"seed": 785494187,
 			"groupIds": [],
 			"frameId": null,
 			"roundness": null,
 			"boundElements": [],
-			"updated": 1706788721455,
+			"updated": 1706798631117,
 			"link": null,
 			"locked": false,
 			"fontSize": 10.936762789127181,
 			"fontFamily": 1,
-			"text": "- Tasa actual",
-			"rawText": "- Tasa actual",
+			"text": "- Tasa de mercado",
+			"rawText": "- Tasa de mercado",
 			"textAlign": "left",
 			"verticalAlign": "top",
 			"containerId": null,
-			"originalText": "- Tasa actual",
+			"originalText": "- Tasa de mercado",
 			"lineHeight": 1.25,
 			"baseline": 9
 		},
@@ -490,7 +490,7 @@ Bono ^4mZdHspz
 		"currentItemTextAlign": "left",
 		"currentItemStartArrowhead": null,
 		"currentItemEndArrowhead": "arrow",
-		"scrollX": 294.8567202394931,
+		"scrollX": 289.63010433373137,
 		"scrollY": 302.0793570649446,
 		"zoom": {
 			"value": 2
