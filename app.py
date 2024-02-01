@@ -1,6 +1,8 @@
 import streamlit as st
 import valuation as val
 import sensitivity_measures as sm
+import numpy as np
+import matplotlib.pyplot as plt
 
 st.write("""
 # Bond calculator
@@ -48,3 +50,9 @@ if st.button('calcular'):
     st.write(f'La tasa diaria es --> {daily_rate}')
     st.write(f'La duración es --> {duration}\nLa convexidad es --> {convexity}')
     st.write(f'El cambio de precio es -- >{change_price}')
+
+    t = np.linspace(-1, 1, 20)/100
+    y2 = sm.change_price_bond(duration, convexity, t)
+    
+    st.line_chart(y2)
+    
