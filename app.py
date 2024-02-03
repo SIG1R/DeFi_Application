@@ -1,6 +1,6 @@
 import streamlit as st
 from Bond import *
-import datetime as dt
+import pandas as pd
 
 #import numpy as np
 #import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ Establecer características del bono
 # Setting type of bond
 type_bond = st.selectbox(
     'Tipo de bono',
-    ('Zero Cupon', 'Cupon Bond')
+    ('Zero Cupon', 'Con Cupon')
 )
 
 
@@ -42,7 +42,7 @@ with RATE_ISSUE_COLUMN: # Set issue_rate input
     face_value = st.number_input('Tasa facial (%)', value=5.75)
 
 with RATE_MARKET_COLUMN: # Set actual_date input
-    market_value = st.number_input('Tasa de mercado (%)', value=10.19) / 100
+    market_value = st.number_input('Tasa de mercado (%)', value=10.19)
 
 bond = Bond(
         type_bond,
@@ -54,8 +54,22 @@ st.write(f'El cupón es fue emitido en la fehca {bond.date_issue}')
 st.write(f'El cupón se vence en la fehca {bond.date_expiration}')
 st.write(f'El cupón tiene una tasa facial de {bond.face_value}')
 st.write(f'El cupón tiene una tasa anual en el mercado de {bond.market_value}')
-st.write(f'El cupón tiene una tasa diaria en el mercado de {bond.daily_rate()}')
-st.write(f'El bono está valorado en {bond.valuation()}')
+bond.daily_rate()
+st.write(f'El cupón tiene una tasa diaria en el mercado de {bond.daily_value}')
+bond.valuation()
+st.write(f'El bono está valorado en {bond.valuation_now}')
+
+bond.get_coupon_dates()
+bond.cash_flow()
+
+data_example = pd.DataFrame({
+    'Fecha': bond.coupon_dates,
+    'FCB': bond.cash_flow_
+})
+
+
+st.write(data_example)
+
 
 
 #basic_points = st.number_input('Puntos básicos (%)') / 100
