@@ -79,5 +79,5 @@ class Bond:
         aux = sum(dataframe['N° pago^2 * Valor presente FC'])/sum(dataframe['N° pago * Valor presente FC'])
         self.convexity_ = round(aux/sum(self.cash_flow_),3)
 
-    def change_price(self):
-        pass
+    def change_price(self, basic_points):
+        return self.duration_*basic_points + 0.5*self.convexity_*basic_points**2

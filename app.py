@@ -86,6 +86,14 @@ bond.convexity(data_example)
 st.write(f'La convexidad del bono es {bond.convexity_}')
 
 
+basic_points = np.linspace(-100,100, 100)
+
+changes = bond.change_price(basic_points)
+
+st.line_chart(changes)
+
+
+
 #basic_points = st.number_input('Puntos básicos (%)') / 100
 
 #st.write(type(fecha_fin))

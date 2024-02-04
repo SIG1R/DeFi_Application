@@ -685,8 +685,8 @@ Bono ^4mZdHspz
 		"currentItemTextAlign": "left",
 		"currentItemStartArrowhead": null,
 		"currentItemEndArrowhead": "arrow",
-		"scrollX": 269.7202976195141,
-		"scrollY": 302.0793570649446,
+		"scrollX": 352.5,
+		"scrollY": 371.91291224421377,
 		"zoom": {
 			"value": 2
 		},
