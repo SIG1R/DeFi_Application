@@ -11,9 +11,9 @@ Establecer características del bono
 """)
 
 # Setting type of bond
-type_bond = st.selectbox(
+type_bond = st.radio(
     'Tipo de bono',
-    ('Zero Cupon', 'Con Cupon')
+    ['Zero Cupon', 'Con Cupon']
 )
 
 
@@ -60,16 +60,30 @@ bond.valuation()
 st.write(f'El bono está valorado en {bond.valuation_now}')
 
 bond.get_coupon_dates()
-bond.cash_flow()
+bond.cash_flows()
+
+payments = [i+1 for i in range(len(bond.coupon_dates))]
 
 data_example = pd.DataFrame({
+    'N° pago': payments,
     'Fecha': bond.coupon_dates,
-    'FCB': bond.cash_flow_
+    'FC': bond.cash_flow_,
+    'Valor presente FC': bond.present_cash_flow
 })
 
+data_example['N° pago * Valor presente FC'] =  data_example['N° pago']*data_example['Valor presente FC']
+
+data_example['N° pago^2 * Valor presente FC'] =  data_example['N° pago']**2*data_example['Valor presente FC']
 
 st.write(data_example)
 
+bond.duration(data_example)
+
+st.write(f'La duración del bono es {bond.duration_} años')
+
+bond.convexity(data_example)
+
+st.write(f'La convexidad del bono es {bond.convexity_}')
 
 
 #basic_points = st.number_input('Puntos básicos (%)') / 100

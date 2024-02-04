@@ -39,9 +39,22 @@ class Bond:
         result = round(result, 3)
         self.daily_value = result
 
-    def cash_flow(self):
-        flow = self.face_value * np.ones(len(self.coupon_dates)-1)
-        self.cash_flow_ = np.append(flow, self.face_value + 100)
+    def cash_flows(self):
+
+        # ----- Getting cash flow -----
+        cash_flow_ = self.face_value * np.ones(len(self.coupon_dates)-1)
+        self.cash_flow_ = np.append(cash_flow_, self.face_value + 100)
+
+        # ----- Getting cash flow in present value -----
+        present_cash_flow = np.array([])
+        base = 1+self.daily_value/100
+        for index,element in enumerate(self.cash_flow_):
+            aux_ = base**((self.coupon_dates[index] - self.date_issue).days)
+            aux_ = self.cash_flow_[index]/aux_
+            present_cash_flow = np.append(present_cash_flow, round(aux_,3))
+
+        self.present_cash_flow = present_cash_flow
+
     
     def valuation(self):
         
@@ -59,11 +72,12 @@ class Bond:
 
             self.valuation_now = left + right
 
-    def duration(self):
-        pass
+    def duration(self, dataframe):
+        self.duration_ = sum(dataframe['N° pago * Valor presente FC'])/sum(dataframe['Valor presente FC'])
 
-    def convexity(self):
-        pass
+    def convexity(self, dataframe):
+        aux = sum(dataframe['N° pago^2 * Valor presente FC'])/sum(dataframe['N° pago * Valor presente FC'])
+        self.convexity_ = round(aux/sum(self.cash_flow_),3)
 
     def change_price(self):
         pass
