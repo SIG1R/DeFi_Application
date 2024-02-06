@@ -85,15 +85,15 @@ st.write(data_example)
 
 basic_points = np.linspace(-100,100, 100)
 
-duration, convexity = bond.change_price(basic_points)
+bond.change_price(basic_points)
 
 
 
 st.write('## Convexidad - duración')
 
 st.line_chart(pd.DataFrame({
-    'Duración': duration,
-    'Convexidad': convexity    
+    'Duración': bond.generic_duration,
+    'Convexidad': bond.generic_convexity    
 }),color=['#27b4e3', '#ee7978']
 )
 

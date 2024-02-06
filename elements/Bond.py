@@ -30,7 +30,7 @@ class Bond:
         self.expiration_date = expiration_date
         
 
-        self.duration=0.1
+        self.duration=3.6
         self.convexity=0.1
 
         self.get_payments_dates()
@@ -131,7 +131,6 @@ class Bond:
 
     def change_price(self, basic_points):
         
-        with_convexity = self.duration*basic_points + 0.5*self.convexity*basic_points**2    
-        without_convexity = self.duration*basic_points
+        self.generic_convexity = self.duration*basic_points + 0.5*self.convexity*basic_points**2    
+        self.generic_duration = self.duration*basic_points
 
-        return without_convexity, with_convexity
