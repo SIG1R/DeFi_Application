@@ -4,8 +4,8 @@ import datetime as dt
 class Bond:
 
     def __init__(self, type_bond = 'Con Cupon',
-                 issue_date = dt.date.today(), expiration_date = dt.date.today(),
-                 face_rate = 0, market_value = 0):
+                 issue_date = dt.date(2024,1,25), expiration_date = dt.date(2027,11,3),
+                 face_rate = 5.75, market_value = 10.19):
         """
         Inicializador de la clase bonos, establece variables de instancia características
         de un bono las cuales son:
@@ -28,13 +28,17 @@ class Bond:
         # Almacenar las variables de instancia sobre las fechas del bono
         self.issue_date = issue_date
         self.expiration_date = expiration_date
+        
+
+        self.duration=0.1
+        self.convexity=0.1
 
         self.get_payments_dates()
         self.get_daily_rate()
         self.get_cash_flow()
 
 
-    def update(self, dataframe):
+    def update(self):
         """
         Método que permite la actualización de un bono, es decir, al mínimo
         cambio en alguna variable de instacia sobre la instancia del bono
@@ -42,12 +46,9 @@ class Bond:
         re-asignan las variables de instancia
         """
         
-        self.get_valuation()
-        self.get_duration(dataframe)
-        self.get_convexity(dataframe)
-
-        self.get_daily_rate()
         self.get_payments_dates()
+        self.get_daily_rate()
+        #self.get_valuation()
         self.get_cash_flow()
 
     def get_payments_dates(self):
@@ -60,11 +61,12 @@ class Bond:
 
 
         payments_dates = [
-                dt.date(TODAY_.year+i,self.expiration_date.month,self.expiration_date.day) # Las fechas de cobro son anuales --> ni los meses ni días varian
-                for i in range(1+self.expiration_date.year - TODAY_.year) # Se obtienen la cantidad de años de diferencia y se le suma 1 
+                dt.date(self.issue_date.year+i,self.expiration_date.month,self.expiration_date.day) # Las fechas de cobro son anuales --> ni los meses ni días varian
+                for i in range(1+self.expiration_date.year - self.issue_date.year) # Se obtienen la cantidad de años de diferencia y se le suma 1 
                 ]                                                         # para que el año de vencimiento se incluya en el ciclo for
 
-        if payments_dates[0] < TODAY_: del payments_date[0]  # Se elimina la primera fecha en caso de que ya se haya reclamado el cupón
+        #if payments_dates[0] < self.issue_date: del payments_dates[0]  # Se elimina la primera fecha en caso de que ya se haya reclamado el cupón
+        payments_dates = [date for date in payments_dates if date > TODAY_]
         
         self.payments_dates = payments_dates # Se almacenan las fechas en una variable de instancia
         self.total_payments = len(payments_dates)
@@ -114,8 +116,7 @@ class Bond:
 
         else: # Sí el bono es de tipo con cupón
             rate = self.market_value/100
-            basic_form = 1+rate**((self.expiration_date - self.issue_date).days)
-            
+            basic_form = 1+rate**power           
             left = self.face_rate*(basic_form -1)/(basic_form*rate)
             right = 100/basic_form
 
@@ -130,4 +131,7 @@ class Bond:
 
     def change_price(self, basic_points):
         
-        return self.duration*basic_points + 0.5*self.convexity*basic_points**2    
+        with_convexity = self.duration*basic_points + 0.5*self.convexity*basic_points**2    
+        without_convexity = self.duration*basic_points
+
+        return without_convexity, with_convexity
