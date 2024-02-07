@@ -3,11 +3,12 @@ import streamlit as st
 
 st.write("""
 # Home section
-Colocar por acá algo que referencie a lo trata esta vaina y que cosas se pueden hacer, hay secciones para cada cosa
+En este aplicativo es posible el análisis de diferentes instrumentos financieros (bonos de momento)
+se podrá visualizar la caja de flujo de los bonos y la convexidad - duración del bono
 """)
 
 
 
-st.sidebar.success("Seleccionar algo.")
+st.sidebar.success("👆Seleccionar algún instrumento financiero.")
 
 
