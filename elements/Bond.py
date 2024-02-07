@@ -1,5 +1,6 @@
 import numpy as np
 import datetime as dt
+import pandas as pd
 
 class Bond:
 
@@ -29,13 +30,21 @@ class Bond:
         self.issue_date = issue_date
         self.expiration_date = expiration_date
         
+        # Instancias base
+        self.total_payments = 0
+        self.total_payments = 0
+        self.payments_dates = np.array([])
+        self.cash_flow = np.array([])
+        self.present_cash_flow = np.array([])
 
-        self.duration=3.6
-        self.convexity=0.1
 
+        # Auto inicializar métodos
         self.get_payments_dates()
         self.get_daily_rate()
         self.get_cash_flow()
+        self.build_dataframe()
+        self.get_duration()
+        self.get_convexity()
 
 
     def update(self):
@@ -48,8 +57,10 @@ class Bond:
         
         self.get_payments_dates()
         self.get_daily_rate()
-        #self.get_valuation()
         self.get_cash_flow()
+        self.build_dataframe()
+        self.get_duration()
+        self.get_convexity()
 
     def get_payments_dates(self):
         """
@@ -89,15 +100,15 @@ class Bond:
         """
 
         # ----- Getting cash flow -----
-        cash_flow_ = self.face_rate * np.ones(len(self.payments_dates)-1)
-        self.cash_flow_ = np.append(cash_flow_, self.face_rate + 100)
+        cash_flow = self.face_rate * np.ones(len(self.payments_dates)-1)
+        self.cash_flow = np.append(cash_flow, self.face_rate + 100)
 
         # ----- Getting cash flow in present value -----
         present_cash_flow = np.array([])
         base = 1+self.daily_rate/100
-        for index,element in enumerate(self.cash_flow_):
+        for index,element in enumerate(self.cash_flow):
             aux_ = base**((self.payments_dates[index] - self.issue_date).days)
-            aux_ = self.cash_flow_[index]/aux_
+            aux_ = self.cash_flow[index]/aux_
             present_cash_flow = np.append(present_cash_flow, round(aux_,3))
 
         self.present_cash_flow = present_cash_flow
@@ -122,15 +133,39 @@ class Bond:
 
             self.valuation = left + right
 
-    def get_duration(self, dataframe):
-        self.duration = sum(dataframe['N° pago * Valor presente FC'])/sum(dataframe['Valor presente FC'])
+    def get_duration(self):
 
-    def get_convexity(self, dataframe):
-        aux = sum(dataframe['N° pago^2 * Valor presente FC'])/sum(dataframe['N° pago * Valor presente FC'])
-        self.convexity = round(aux/sum(self.cash_flow_),3)
+        self.duration = sum(self.dataframe['N° pago * Valor presente FC'])/sum(self.dataframe['Valor presente FC'])
+
+    def get_convexity(self):
+        aux = sum(self.dataframe['N° pago^2 * Valor presente FC'])/sum(self.dataframe['N° pago * Valor presente FC'])
+
+        self.convexity = round(aux/sum(self.cash_flow),3)
+
 
     def change_price(self, basic_points):
         
         self.generic_convexity = self.duration*basic_points + 0.5*self.convexity*basic_points**2    
         self.generic_duration = self.duration*basic_points
 
+
+
+
+
+
+    def build_dataframe(self):
+        '''
+        Método que construye el DataFrame de flujo de caja
+        '''
+
+        self.index = np.array([i for i  in range(1,self.total_payments+1)])
+    
+        self.dataframe = pd.DataFrame({
+            'Fecha': self.payments_dates,
+            'FC': self.cash_flow,
+            'Valor presente FC': self.present_cash_flow
+        }, index=self.index)
+
+        self.dataframe['N° pago * Valor presente FC'] =  self.index*self.dataframe['Valor presente FC']
+
+        self.dataframe['N° pago^2 * Valor presente FC'] =  self.index**2*self.dataframe['Valor presente FC']

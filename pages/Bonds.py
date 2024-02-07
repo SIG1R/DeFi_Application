@@ -1,6 +1,5 @@
 import streamlit as st
 from elements.Bond import *
-import pandas as pd
 
 
 bond = Bond()
@@ -64,23 +63,9 @@ with st.sidebar:
 
 
 
-index = np.array([i for i  in range(1,bond.total_payments+1)])
-
-data_example = pd.DataFrame({
-    'Fecha': bond.payments_dates,
-    'FC': bond.cash_flow_,
-    'Valor presente FC': bond.present_cash_flow
-}, index=index)
-
-
-data_example['N° pago * Valor presente FC'] =  index*data_example['Valor presente FC']
-
-data_example['N° pago^2 * Valor presente FC'] =  index**2*data_example['Valor presente FC']
-
-
 st.write('## Flujo de caja')
 
-st.write(data_example)
+st.write(bond.dataframe)
 
 
 basic_points = np.linspace(-100,100, 100)
