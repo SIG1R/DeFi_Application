@@ -1,6 +1,8 @@
 import streamlit as st
 from elements.Bond import *
-
+import altair as alt
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 bond = Bond()
 
@@ -8,13 +10,13 @@ with st.sidebar:
 
     st.write('#### Establezca las caracteristicas del bono')
 
-
     # Setting type of bond
     type_bond = st.radio(
         'Tipo de bono',
         ['Con Cupon', 'Zero Cupon'],
         horizontal = True
     )
+    bond.type_bond=type_bond
 
 
     # Setting dates about the bond
@@ -75,14 +77,22 @@ bond.change_price(basic_points)
 
 
 st.write('## Convexidad - duración')
-
-st.line_chart(pd.DataFrame({
+data = pd.DataFrame({
     'Duración': bond.generic_duration,
     'Convexidad': bond.generic_convexity    
-}),color=['#27b4e3', '#ee7978']
-)
+})
 
+#st.line_chart(data,x='Duración',color=['#27b4e3', '#ee7978'])
 
+# Plot using Seaborn
+sns.set(style="whitegrid")  # Optional: Set the style
+fig, ax=plt.subplots()  # Optional: Set the figure size
+sns.lineplot(data=data, ax=ax)
+ax.set_xlabel('Puntos básicos')
+ax.set_ylabel('Precio bono')
+ax.set_title('Line Chart')
+ax.legend(title='Variable', labels=['Duración', 'Convexidad'])  # Optional: Add legend
+st.pyplot(fig)
 
 #basic_points = st.number_input('Puntos básicos (%)') / 100
 
@@ -96,7 +106,7 @@ st.line_chart(pd.DataFrame({
     
 #    duration, convexity = sm.duration_convexity(expiration_date, issue_rate, daily_rate)
 #    change_price = sm.change_price_bond(duration, convexity, basic_points)
-    
+
 #    st.write(f'La tasa diaria es --> {daily_rate}')
 #    st.write(f'La duración es --> {duration}\nLa convexidad es --> {convexity}')
 #    st.write(f'El cambio de precio es -- >{change_price}')

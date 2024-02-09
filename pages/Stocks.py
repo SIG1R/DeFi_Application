@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import yfinance as yf
+import datetime as dt
 
 from elements.Stock import *
 
 
 stocks_available = pd.read_csv('stocks_list.csv')
-
+stocks_to_use = []
 
 with st.sidebar:
 
@@ -21,7 +22,13 @@ with st.sidebar:
     for symbol in stock_symbol_list:
         company_name = stocks_available[stocks_available['Symbol']==symbol]['Company Name']
         yf.Ticker(symbol)
-        symbol = Stock(symbol, company_name)
+        stocks_to_use.append(Stock(symbol, company_name))
 
-for symbol in stock_symbol_list:
-    st.write(f'La acción con symbolo {symbol}')
+
+
+
+for stock in stocks_to_use:
+    st.write(f'La acción con symbolo {stock.symbol}')
+
+
+st.write('# Valoración de activos')

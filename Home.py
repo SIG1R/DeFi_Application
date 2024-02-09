@@ -9,6 +9,6 @@ se podrá visualizar la caja de flujo de los bonos y la convexidad - duración d
 
 
 
-st.sidebar.success("👆Seleccionar algún instrumento financiero.")
+st.sidebar.success('Seleccione algún instrumento financiero 👆')
 
 

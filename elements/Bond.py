@@ -70,17 +70,19 @@ class Bond:
 
         TODAY_ = dt.date.today()
 
+        if self.type_bond == 'Zero Cupon':
+            self.payments_dates = np.array([self.expiration_date]) # Se almacenan las fechas en una variable de instancia
+        else:
 
-        payments_dates = [
-                dt.date(self.issue_date.year+i,self.expiration_date.month,self.expiration_date.day) # Las fechas de cobro son anuales --> ni los meses ni días varian
-                for i in range(1+self.expiration_date.year - self.issue_date.year) # Se obtienen la cantidad de años de diferencia y se le suma 1 
-                ]                                                         # para que el año de vencimiento se incluya en el ciclo for
+            payments_dates = [
+                    dt.date(self.issue_date.year+i,self.expiration_date.month,self.expiration_date.day) # Las fechas de cobro son anuales
+                    for i in range(1+self.expiration_date.year - self.issue_date.year) # Se obtienen la cantidad de años de diferencia y se le suma 1 
+                    ]                                                         # para que el año de vencimiento se incluya en el ciclo for
 
-        #if payments_dates[0] < self.issue_date: del payments_dates[0]  # Se elimina la primera fecha en caso de que ya se haya reclamado el cupón
-        payments_dates = [date for date in payments_dates if date > TODAY_]
-        
-        self.payments_dates = payments_dates # Se almacenan las fechas en una variable de instancia
-        self.total_payments = len(payments_dates)
+            payments_dates = [date for date in payments_dates if date > TODAY_] # Se elimina la primera fecha en caso de que ya se haya reclamado el cupón
+
+            self.payments_dates = payments_dates # Se almacenan las fechas en una variable de instancia
+        self.total_payments = len(self.payments_dates)
 
 
     def get_daily_rate(self):
@@ -98,10 +100,15 @@ class Bond:
         """
         Método que cálcula el flujo de caja del bono
         """
+        
+        if self.type_bond == 'Zero Cupon':
+            self.cash_flow = np.array([self.face_rate+100])
 
-        # ----- Getting cash flow -----
-        cash_flow = self.face_rate * np.ones(len(self.payments_dates)-1)
-        self.cash_flow = np.append(cash_flow, self.face_rate + 100)
+        else:
+
+           # ----- Getting cash flow -----
+            cash_flow = self.face_rate * np.ones(len(self.payments_dates)-1)
+            self.cash_flow = np.append(cash_flow, self.face_rate + 100)
 
         # ----- Getting cash flow in present value -----
         present_cash_flow = np.array([])
@@ -145,8 +152,8 @@ class Bond:
 
     def change_price(self, basic_points):
         
-        self.generic_convexity = self.duration*basic_points + 0.5*self.convexity*basic_points**2    
-        self.generic_duration = self.duration*basic_points
+        self.generic_convexity = -self.duration*basic_points + 0.5*self.convexity*basic_points**2    
+        self.generic_duration = -self.duration*basic_points
 
 
 
