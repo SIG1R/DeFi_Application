@@ -70,7 +70,7 @@ st.write('## Flujo de caja')
 st.write(bond.dataframe)
 
 
-basic_points = np.linspace(-100,100, 100)
+basic_points = np.linspace(-100,100, 200)
 
 bond.change_price(basic_points)
 
@@ -78,6 +78,7 @@ bond.change_price(basic_points)
 
 st.write('## Convexidad - duración')
 data = pd.DataFrame({
+    'Puntos Básicos': basic_points,
     'Duración': bond.generic_duration,
     'Convexidad': bond.generic_convexity    
 })
@@ -85,14 +86,71 @@ data = pd.DataFrame({
 #st.line_chart(data,x='Duración',color=['#27b4e3', '#ee7978'])
 
 # Plot using Seaborn
-sns.set(style="whitegrid")  # Optional: Set the style
-fig, ax=plt.subplots()  # Optional: Set the figure size
-sns.lineplot(data=data, ax=ax)
-ax.set_xlabel('Puntos básicos')
-ax.set_ylabel('Precio bono')
-ax.set_title('Line Chart')
-ax.legend(title='Variable', labels=['Duración', 'Convexidad'])  # Optional: Add legend
-st.pyplot(fig)
+#sns.set(style="whitegrid")  # Optional: Set the style
+#fig, ax=plt.subplots()  # Optional: Set the figure size
+#sns.lineplot(data=data, ax=ax)
+#ax.set_xlabel('Puntos básicos')
+#ax.set_ylabel('Precio bono')
+#ax.set_title('Line Chart')
+#ax.legend(title='Variable', labels=['Duración', 'Convexidad'])  # Optional: Add legend
+#st.pyplot(fig)
+
+
+
+
+
+
+
+
+
+# Crear el gráfico para la duración
+dur_chart = alt.Chart(data).mark_line(color='blue').encode(
+    x='Puntos Básicos',
+    y=alt.Y('Duración', title='Cambios en el precio del bono'),
+    # Agregar leyenda para la duración
+    color=alt.value('#1ce5cc'),
+    opacity=alt.value(0.8),
+    #legend=alt.Legend(title='Duración')
+)
+
+# Crear el gráfico para la convexidad
+conv_chart = alt.Chart(data).mark_line(color='red').encode(
+    x='Puntos Básicos',
+    y=alt.Y('Convexidad', title='Cambios en el precio del bono'),
+    # Agregar leyenda para la convexidad
+    color=alt.value('#5fe630'),
+    opacity=alt.value(0.8),
+    #legend=alt.Legend(title='Convexidad')
+)
+
+# Combinar los dos gráficos
+combined_chart = (dur_chart + conv_chart)
+
+
+
+
+
+
+# Mostrar el gráfico combinado en Streamlit
+st.altair_chart(combined_chart, use_container_width=True)
+
+st.write('## Negociación de bonos')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #basic_points = st.number_input('Puntos básicos (%)') / 100
 

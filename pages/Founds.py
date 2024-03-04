@@ -3,12 +3,17 @@ from elements.Found import *
 import pandas as pd
 
 with st.sidebar:
-    st.multiselect('Seleccione los fondos', ['fds','fasdf'])
+    found = st.multiselect('Seleccione los fondos', ['KO','TLSA'])
+    index_market = st.multiselect('Seleccione el índice del mercado',
+                                  ["^GSPC", "^DJI", "^IXIC", "^NYA", "^RUT", "^FTSE", "^N225"],
+                    )
 
 
+    f = Found(found, index_market)
 
 st.write('# Modelo CAMP')
-f = Found()
-st.write(f'Nombre del fondo {f.name}')
+st.write(f'Nombre del fondo {f.found}')
+st.write(f'Nombre del índice {f.index_market}')
+st.write(f'Resultado beta {f.beta}')
 
 
