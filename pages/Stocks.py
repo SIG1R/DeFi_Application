@@ -48,9 +48,10 @@ with st.sidebar:
         
     for key in stocks_instances.keys():
         stocks_instances[key].get_data(start_date, end_date)
+        stocks_instances[key].calculate_returns()
 
 
-# Graph closes prices
+# Graph individual summary per stock
 st.write('## Individual stock summary')
 with st.expander('SHOW SUMMARY'):
     for key in stocks_instances.keys():
@@ -81,10 +82,22 @@ with st.expander('SHOW SUMMARY'):
         #st.table(stocks_instances[key].history)
 
 
+# Graph line plot
+st.write('## Trend history')
+with st.expander('SHOW GRAPH'):
+    st.write('Coming soon')
+    
+    for key in stocks_instances.keys():
+        st.write(f'Closes prices of {key}')
+        st.table(stocks_instances[key].cumulative_returns)
 
+    #altair_trend_plot = stocks_instances['NVDA'].trend_plot()
+    #st.altair_char(altair_trend_plot)
 
-
-
+# Graph heatmap corr plot
+st.write('## Correlation between closes prices')
+with st.expander('SHOW GRAPH'):
+    st.write('Coming soon')
 
 #for key in stocks_instances.keys():
 #    st.write(stocks_instances[key].ticker, start_date, end_date)

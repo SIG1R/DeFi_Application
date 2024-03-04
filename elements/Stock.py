@@ -25,40 +25,29 @@ class Stock:
 
     def get_data(self, start_date, end_date):
         self.history = yf.download(self.ticker, start=start_date, end=end_date)
-
-    def closing_prices(self):
         self.close = self.history['Close']
+
 
     def calculate_returns(self):
         # Calculate daily percentage returns
         self.returns = self.close.pct_change()
 
-    def calculate_cumulative_returns(self):
         # Calculate cumulative returns
         self.cumulative_returns = (1 + self.returns).cumprod()
 
-    def plot_beta(self):
+    def trend_plot(self):
+        '''
+        This method was made for return the altair config by implement it
+        in streamlit framework.
+        '''
 
-
-        # Crear el gráfico para la duración
-        #chart = alt.Chart(self.cumulative_returns).mark_line(color='blue').encode(
-        #    x=alt.X(self.cumulative_returns.index, title='Fecha'),  # Utilizar 'index' como el nombre del índice
-        #    y=alt.Y(self.cumulative_returns, title='Cambios en el precio del bono'),
-        #    # Agregar leyenda para la duración
-        #    color=alt.value('#1ce5cc'),
-        #    opacity=alt.value(0.8),
-        #    #legend=alt.Legend(title='Duración')
-        #)
-
-
-        # Crear el gráfico para la duración
         chart = alt.Chart(self.cumulative_returns).mark_line(color='blue').encode(
-            x=alt.X('index:T', title='Fecha'),  # Utilizar 'index:T' para indicar que se trata de una fecha
-            y=alt.Y(self.cumulative_returns['Close'], title='Cambios en el precio del bono'),
-            # Agregar leyenda para la duración
-            color=alt.value('#1ce5cc'),
-            opacity=alt.value(0.8),
-            #legend=alt.Legend(title='Duración')
+                    x=alt.X('index:T', title='Fecha'),  # Utilizar 'index:T' para indicar que se trata de una fecha
+                    y=alt.Y(self.cumulative_returns['Close'], title='Cambios en el precio del bono'),
+                    # Agregar leyenda para la duración
+                    color=alt.value('#1ce5cc'),
+                    opacity=alt.value(0.8),
+                    #legend=alt.Legend(title='Duración')
         )
 
 
