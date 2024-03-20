@@ -1,5 +1,5 @@
 import streamlit as st
-from elements.Found import *
+from Components.instruments import Found
 import pandas as pd
 
 with st.sidebar:

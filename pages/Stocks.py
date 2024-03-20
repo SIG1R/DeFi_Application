@@ -5,16 +5,17 @@ import yfinance as yf
 import datetime as dt
 import matplotlib.pyplot as plt
 from streamlit_extras.metric_cards import style_metric_cards
+import os
+import altair as alt
+from Components.instruments import Stock
 
 
-from elements.Stock import *
-
-
-stocks_available = pd.read_csv('stocks_list.csv')
+archivo_csv = os.path.join(os.path.dirname(__file__), '..', 'data', 'stocks_list.csv')
+stocks_available = pd.read_csv(archivo_csv)
 
 stocks_instances = dict()
 
-with st.sidebar:
+with st.expander('Parámetros de las acciones'):
 
     st.write('#### Establezca las caracteristicas de las acciones')
 
@@ -85,19 +86,85 @@ with st.expander('SHOW SUMMARY'):
 # Graph line plot
 st.write('## Trend history')
 with st.expander('SHOW GRAPH'):
-    st.write('Coming soon')
+    
+    source = pd.DataFrame({
+            'Symbol': [],
+            'Date': [],
+            'Price': []
+
+        })
+
     
     for key in stocks_instances.keys():
-        st.write(f'Closes prices of {key}')
-        st.table(stocks_instances[key].cumulative_returns)
 
-    #altair_trend_plot = stocks_instances['NVDA'].trend_plot()
-    #st.altair_char(altair_trend_plot)
+        stock_data = stocks_instances[key].cumulative_returns
+        new_data = pd.DataFrame({
+            'Date': stock_data['Date'],
+            'Price': stock_data['Close'],
+            'Symbol': key
+        })
+        source = pd.concat([source, new_data], ignore_index=True)
+
+        #line += stocks_instances[key].trend_plot()
+    base = alt.Chart(source).encode(
+        alt.Color("Symbol").legend(None)
+        )
+
+    line = base.mark_line().encode(x="Date", y="Price")
+    
+    last_price = base.mark_circle().encode(
+        alt.X("last_date['Date']:T"),
+        alt.Y("last_date['Price']:Q")
+        ).transform_aggregate(
+            last_date="argmax(Date)",
+            groupby=["Symbol"]
+        )
+
+    company_name = last_price.mark_text(align="left", dx=4).encode(text="Symbol")
+
+    chart = (line + last_price + company_name).encode(
+        x=alt.X().title("date"),
+        y=alt.Y().title("price")
+    )
+
+    st.altair_chart(chart)
 
 # Graph heatmap corr plot
 st.write('## Correlation between closes prices')
+
+df = pd.DataFrame()
+
 with st.expander('SHOW GRAPH'):
     st.write('Coming soon')
 
-#for key in stocks_instances.keys():
-#    st.write(stocks_instances[key].ticker, start_date, end_date)
+
+    for key in stock_symbol_list:
+        df[key] = stocks_instances[key].cumulative_returns['Close']
+    correlation = df.corr(method='pearson')
+    correlation = correlation.stack().reset_index()
+    correlation.columns = ['S1','S2','Correlation']
+
+    # Crear el heatmap con Altair
+    heatmap = alt.Chart(correlation).mark_rect().encode(
+        x='S1:O',
+        y='S2:O',
+        color='Correlation:Q'
+    ).properties(
+        width=400,
+        height=400,
+        title='Correlation Heatmap of Fruits'
+    )
+
+    # Rotar etiquetas del eje x para una mejor visualización
+    heatmap = heatmap.configure_axisX(labelAngle=-45)
+
+    # Display the chart
+    st.write("Heatmap of Fruit Prices")
+    st.altair_chart(heatmap)
+
+
+
+
+
+
+

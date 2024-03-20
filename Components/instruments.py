@@ -1,6 +1,17 @@
+# Numerical
 import numpy as np
 import datetime as dt
 import pandas as pd
+import yfinance as yf
+import statsmodels.api as sm
+
+# Visualization
+import matplotlib.pyplot as plt
+import seaborn as sns
+import altair as alt
+
+
+
 
 class Bond:
 
@@ -176,3 +187,100 @@ class Bond:
         self.dataframe['N° pago * Valor presente FC'] =  self.index*self.dataframe['Valor presente FC']
 
         self.dataframe['N° pago^2 * Valor presente FC'] =  self.index**2*self.dataframe['Valor presente FC']
+
+
+
+
+
+class Found(Bond):
+    
+    def __init__(self, found, index):
+        self.found = found
+        self.index_market = index
+        # Fetch historical data
+        asset_data = yf.download(self.found, start="2019-01-01", end="2024-01-01")
+        market_index_data = yf.download(self.index_market, start="2019-01-01", end="2024-01-01")
+
+        # Calculate returns
+        asset_returns = asset_data['Adj Close'].pct_change().dropna()
+        market_returns = market_index_data['Adj Close'].pct_change().dropna()
+
+        # Add a constant to the independent variable (market returns)
+        X = sm.add_constant(market_returns)
+
+        # Fit the regression model
+        model = sm.OLS(asset_returns, X)
+        results = model.fit()
+
+        # Extract beta (slope coefficient) from the regression results
+        self.beta = results.params[1]
+
+
+
+
+
+class Stock:
+    '''
+    This Class storage basic information about a Stock in the market
+    as ticker (symbol), name and 
+    '''
+
+    def __init__(self, symbol):
+        '''
+        Init the method Stock with the symbol (str type) of a stock.
+        some examples are: GOOGL, NVDA, AMZN...
+        '''
+        assert type(symbol) == str, 'Check the type of the initializer argument'
+
+        self.ticker = symbol
+        self.history = None
+        self.close = None
+        self.returns = None
+        self.cumulative_returns = None
+
+    def get_data(self, start_date, end_date):
+        self.history = yf.download(self.ticker, start=start_date, end=end_date)
+        self.close = self.history['Close']
+
+
+    def calculate_returns(self):
+        # Calculate daily percentage returns
+        self.returns = self.close.pct_change()
+
+        # Calculate cumulative returns
+        self.cumulative_returns = (1 + self.returns).cumprod().reset_index()
+
+    def trend_plot(self):
+        '''
+        This method was made for return the altair config by implement it
+        in streamlit framework.
+        '''
+
+        chart = alt.Chart(self.cumulative_returns).mark_line(color='blue').encode(
+                    x=alt.X('Date', title='Fecha'),  # Utilizar 'index:T' para indicar que se trata de una fecha
+                    y=alt.Y('Close', title='Cambios en el precio del bono'),
+                    # Agregar leyenda para la duración
+                    color=alt.value('#1ce5cc'),
+                    opacity=alt.value(0.8),
+                    #legend=alt.Legend(title='Duración')
+        )
+
+
+        return chart
+
+    def plot_cumulative_returns(self):
+        # Plotting cumulative returns for each stock
+        fig, ax = plt.subplots()
+        for ticker in self.tickers:
+            plt.plot(self.cumulative_returns.index, self.cumulative_returns[ticker], label=ticker)
+        ax.set_title('Stock Cumulative Returns Over Time')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Cumulative Returns')
+        ax.legend()
+        return  fig
+
+    def plot_corr(self):
+        fig, ax = plt.subplots()
+        corr = self.cumulative_returns.corr('spearman')
+
+
