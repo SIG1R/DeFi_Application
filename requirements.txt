@@ -7,3 +7,4 @@ yfinance
 datetime
 vega_datasets
 streamlit_extras
+statsmodels
