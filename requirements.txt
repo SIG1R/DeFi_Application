@@ -5,4 +5,5 @@ altair
 numpy
 yfinance
 datetime
-
+vega_datasets
+streamlit_extras
