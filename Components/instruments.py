@@ -195,8 +195,14 @@ class Bond:
 class Found(Bond):
     
     def __init__(self, found, index):
+        '''
+        Initialize the Found instance
+        '''
+
+
         self.found = found
         self.index_market = index
+
         # Fetch historical data
         asset_data = yf.download(self.found, start="2019-01-01", end="2024-01-01")
         market_index_data = yf.download(self.index_market, start="2019-01-01", end="2024-01-01")
@@ -215,7 +221,8 @@ class Found(Bond):
         # Extract beta (slope coefficient) from the regression results
         self.beta = results.params[1]
 
-
+    def camp(self):
+        pass
 
 
 

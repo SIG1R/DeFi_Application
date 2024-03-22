@@ -10,7 +10,7 @@ import pandas as pd
 
 tab1, tab2 = st.tabs(['Selector de bonos','Cálculo manual'])
 
-with tab1:
+with tab2:
 
 
     bond = Bond()
@@ -184,7 +184,7 @@ with tab1:
 #    st.line_chart(y2)
 
 
-with tab2:
+with tab1:
 
     with st.expander('Configuración del bono'):
         st.write('sdkfñlad')

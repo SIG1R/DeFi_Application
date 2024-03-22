@@ -1,12 +1,28 @@
+# >>> Importing libraries <<<
 import streamlit as st
 from Components.instruments import Found
 import pandas as pd
+import os
 
-with st.sidebar:
-    found = st.multiselect('Seleccione los fondos', ['KO','TLSA'])
-    index_market = st.multiselect('Seleccione el índice del mercado',
-                                  ["^GSPC", "^DJI", "^IXIC", "^NYA", "^RUT", "^FTSE", "^N225"],
-                    )
+archivo_csv = os.path.join(os.path.dirname(__file__), '..', 'data', 'stocks_list.csv')
+stocks_available = pd.read_csv(archivo_csv)
+
+stocks_instances = dict()
+
+
+
+# >>> Creating settings sesion <<<
+with st.expander('Parámetros'):
+
+    # Select stocks
+    found = st.multiselect('Seleccione los fondos',
+                           stocks_available['Symbol']) 
+    
+    # Select market index
+    index_market = st.selectbox(
+            'Seleccione el índice del mercado',
+            ["^GSPC", "^DJI", "^IXIC", "^NYA", "^RUT", "^FTSE", "^N225"],
+    )
 
 
     f = Found(found, index_market)

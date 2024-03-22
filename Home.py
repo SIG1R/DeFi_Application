@@ -1,82 +1,43 @@
 import streamlit as st
 
 
-st.write("""
-# Home section
-En este aplicativo es posible el análisis de diferentes instrumentos financieros (bonos de momento)
-se podrá visualizar la caja de flujo de los bonos y la convexidad - duración del bono
+st.markdown("""
+# Aplicativo financiero
+¡Bienvenido a nuestro aplicativo de análisis financiero!
+
+En el mundo cada vez más complejo de las inversiones, entender y evaluar los diferentes instrumentos financieros es crucial para tomar decisiones informadas y maximizar el potencial de retorno. Es en este contexto que nace nuestro proyecto, un aplicativo diseñado para brindar análisis detallados de una amplia gama de instrumentos financieros, incluyendo bonos, acciones y fondos de inversión.
+
+Nuestra plataforma proporciona a los usuarios una herramienta poderosa para evaluar y comparar diferentes opciones de inversión. Desde la valoración de bonos corporativos hasta el análisis fundamental de acciones, nuestro aplicativo ofrece una variedad de herramientas y métricas para ayudar a los inversores a tomar decisiones informadas y estratégicas.
+
+Además de ofrecer análisis detallados de instrumentos financieros individuales, nuestro aplicativo también permite a los usuarios realizar comparaciones entre diferentes activos, evaluar el rendimiento histórico, y proyectar posibles escenarios futuros. Todo esto se presenta de manera clara y accesible, facilitando la comprensión incluso para aquellos que son nuevos en el mundo de las inversiones.
+
+Ya sea que seas un inversor experimentado en busca de información detallada o un principiante que busca aprender más sobre el mercado financiero, nuestro aplicativo está diseñado para satisfacer tus necesidades. Únete a nosotros mientras exploramos el emocionante mundo de las inversiones y te ayudamos a alcanzar tus objetivos financieros.
+
+¡Comienza a explorar ahora y lleva tus inversiones al siguiente nivel!
 """)
 
 
 
 st.sidebar.success('Seleccione algún instrumento financiero 👆')
 
-st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
-
-
-
-
-
-
-import altair as alt
 import streamlit as st
-from vega_datasets import data
+import streamlit.components.v1 as components
 
-source = data.seattle_weather()
-
-scale = alt.Scale(
-    domain=["sun", "fog", "drizzle", "rain", "snow"],
-    range=["#e7ba52", "#a7a7a7", "#aec7e8", "#1f77b4", "#9467bd"],
-)
-color = alt.Color("weather:N", scale=scale)
-
-# We create two selections:
-# - a brush that is active on the top panel
-# - a multi-click that is active on the bottom panel
-brush = alt.selection_interval(encodings=["x"])
-click = alt.selection_multi(encodings=["color"])
-
-# Top panel is scatter plot of temperature vs time
-points = (
-    alt.Chart()
-    .mark_point()
-    .encode(
-        alt.X("monthdate(date):T", title="Date"),
-        alt.Y(
-            "temp_max:Q",
-            title="Maximum Daily Temperature (C)",
-            scale=alt.Scale(domain=[-5, 40]),
-        ),
-        color=alt.condition(brush, color, alt.value("lightgray")),
-        size=alt.Size("precipitation:Q", scale=alt.Scale(range=[5, 200])),
-    )
-    .properties(width=550, height=300)
-    .add_selection(brush)
-    .transform_filter(click)
+components.html(
+    """
+        <a href="https://www.instagram.com/_sigir_/" class="twitter-share-button" 
+        data-text="Check my cool Streamlit Web-App🎈" 
+        data-url="https://streamlit.io"
+        data-show-count="false">
+        data-size="Large" 
+        data-hashtags="streamlit,python"
+        Tweet
+        </a>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    """
 )
 
-# Bottom panel is a bar chart of weather type
-bars = (
-    alt.Chart()
-    .mark_bar()
-    .encode(
-        x="count()",
-        y="weather:N",
-        color=alt.condition(click, color, alt.value("lightgray")),
-    )
-    .transform_filter(brush)
-    .properties(
-        width=550,
-    )
-    .add_selection(click)
-)
 
-chart = alt.vconcat(points, bars, data=source, title="Seattle Weather: 2012-2015")
 
-tab1, tab2 = st.tabs(["Streamlit theme (default)", "Altair native theme"])
 
-with tab1:
-    st.altair_chart(chart, theme="streamlit", use_container_width=True)
-with tab2:
-    st.altair_chart(chart, theme=None, use_container_width=True)
 
