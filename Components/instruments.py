@@ -192,37 +192,80 @@ class Bond:
 
 
 
-class Found(Bond):
+class Found:
     
-    def __init__(self, found, index):
+    def __init__(self, found_name:str, index_market:str):
         '''
-        Initialize the Found instance
+        Initialize a Found instance with the basic information about a found
+
+        Arguments:
+            - found_name: Is the name of you found to analize
+            - index_market: Is the index of the market that you want analize
         '''
 
+        self.found_name = found_name
+        self.index_market = index_market
 
-        self.found = found
-        self.index_market = index
+    def get_data(self, start_date, end_date):
+        '''
+        This method enables download the historical data of the found
+        and the index market, both in the same interval dates.
+        '''
 
-        # Fetch historical data
-        asset_data = yf.download(self.found, start="2019-01-01", end="2024-01-01")
-        market_index_data = yf.download(self.index_market, start="2019-01-01", end="2024-01-01")
+        # Download found historical data
+        self.found_data = yf.download(
+                self.found_name,
+                start = start_date,
+                end = end_date
+        )
 
-        # Calculate returns
-        asset_returns = asset_data['Adj Close'].pct_change().dropna()
-        market_returns = market_index_data['Adj Close'].pct_change().dropna()
+        # Download index market historical data
+        self.market_data = yf.download(
+                self.index_market,
+                start = start_date,
+                end = end_date
+        )
+        
+    def calculate_returns(self):
+        '''
+        This method compute the cumulative returns of your found and market.
+        '''
 
-        # Add a constant to the independent variable (market returns)
-        X = sm.add_constant(market_returns)
+        # Percentaje daily change
+        self.found_returns = self.found_data['Close'].pct_change()
+        self.market_returns =  self.market_data['Close'].pct_change()
 
-        # Fit the regression model
-        model = sm.OLS(asset_returns, X)
-        results = model.fit()
+        # Cumulative returns
+        self.found_cum_returns = (1 + self.found_returns).cumprod().reset_index()
+        self.market_cum_returns = (1 + self.market_returns).cumprod().reset_index()
 
-        # Extract beta (slope coefficient) from the regression results
-        self.beta = results.params[1]
+    def capm(self, Rate_free, Rate_actual):
+        '''
+        Compute the beta and Jensen' alpha.
+        '''
 
-    def camp(self):
-        pass
+        # Computing beta
+        covariance = self.found_returns.cov(self.market_returns)
+        variance = self.market_returns.var()
+
+        self.beta = covariance/variance
+
+        # Computing Jensen's alpha
+        self.alpha = Rate_actual - Rate_free + self.beta*(self.market_returns.mean() - Rate_free)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

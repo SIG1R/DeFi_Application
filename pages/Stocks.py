@@ -1,13 +1,19 @@
+# >>> Importing libraries <<<
+# Base
 import streamlit as st
-import pandas as pd
+from streamlit_extras.metric_cards import style_metric_cards
+import datetime as dt
+import os
+from Components.instruments import Stock as Stock
+
+# Numericals and data
 import numpy as np
 import yfinance as yf
-import datetime as dt
+import pandas as pd
+
+# Visualizations
 import matplotlib.pyplot as plt
-from streamlit_extras.metric_cards import style_metric_cards
-import os
 import altair as alt
-from Components.instruments import Stock
 
 
 archivo_csv = os.path.join(os.path.dirname(__file__), '..', 'data', 'stocks_list.csv')
