@@ -4,7 +4,8 @@ import streamlit as st
 from streamlit_extras.metric_cards import style_metric_cards
 import datetime as dt
 import os
-from Components.instruments import Stock as Stock
+from components.instruments import Stock as Stock
+from components.utils import graph_data
 
 # Numericals and data
 import numpy as np
@@ -89,51 +90,47 @@ with st.expander('SHOW SUMMARY'):
         #st.table(stocks_instances[key].history)
 
 
+
+
+
+
+
+
+
+
+
 # Graph line plot
 st.write('## Trend history')
 with st.expander('SHOW GRAPH'):
     
-    source = pd.DataFrame({
-            'Symbol': [],
-            'Date': [],
-            'Price': []
-
-        })
-
+    source = graph_data('Symbol', 'Date', 'Returns')
     
     for key in stocks_instances.keys():
 
+        # Get cumulative returns
         stock_data = stocks_instances[key].cumulative_returns
-        new_data = pd.DataFrame({
+
+        # Create new transaction
+        # Symbo, Date, Returns
+        row = {
+            'Symbol': key,
             'Date': stock_data['Date'],
-            'Price': stock_data['Close'],
-            'Symbol': key
-        })
-        source = pd.concat([source, new_data], ignore_index=True)
+            'Returns': stock_data['Close']
+        }
+        
+        # Adding transaction to dataframe
+        source.add_row(pd.DataFrame(row))
 
-        #line += stocks_instances[key].trend_plot()
-    base = alt.Chart(source).encode(
-        alt.Color("Symbol").legend(None)
-        )
+    # Plotting line chart (trend returns)
+    trend_chart = source.trend_chart('Date', 'Returns', 'Symbol', 'Crecimiento en los retornos acumulados')
+    st.altair_chart(trend_chart)
 
-    line = base.mark_line().encode(x="Date", y="Price")
-    
-    last_price = base.mark_circle().encode(
-        alt.X("last_date['Date']:T"),
-        alt.Y("last_date['Price']:Q")
-        ).transform_aggregate(
-            last_date="argmax(Date)",
-            groupby=["Symbol"]
-        )
 
-    company_name = last_price.mark_text(align="left", dx=4).encode(text="Symbol")
 
-    chart = (line + last_price + company_name).encode(
-        x=alt.X().title("date"),
-        y=alt.Y().title("price")
-    )
 
-    st.altair_chart(chart)
+
+
+
 
 # Graph heatmap corr plot
 st.write('## Correlation between closes prices')

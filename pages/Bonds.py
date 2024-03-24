@@ -1,5 +1,5 @@
 import streamlit as st
-from Components.instruments import Bond
+from components.instruments import Bond
 import altair as alt
 import seaborn as sns
 import matplotlib.pyplot as plt

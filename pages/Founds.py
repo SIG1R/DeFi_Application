@@ -1,6 +1,7 @@
 # >>> Importing libraries <<<
 import streamlit as st
-from Components.instruments import Found
+from components.instruments import Found
+from components.utils import graph_data
 import pandas as pd
 import os
 import altair as al
@@ -61,30 +62,23 @@ for found_name in founds_selected:
     founds_instances[found_name].calculate_returns()
     founds_instances[found_name].capm(Rate_free, Rate_actual)
 
-    
-to_graph = pd.DataFrame({
-    'Stock': [],
-    'Beta': [],
-    'Alpha': []
-})
 
+graph = graph_data('Stock', 'Beta', 'Alpha')
 
 for key in founds_instances.keys():
 
-    row = [key, founds_instances[key].beta, founds_instances[key].alpha]
-    to_graph.loc[len(to_graph)] = row
+    row = {'Stock': [key],
+           'Beta': [founds_instances[key].beta],
+           'Alpha': [founds_instances[key].alpha]
+    }
+    graph.add_row(pd.DataFrame(row))
 
     st.write(f'{founds_instances[key].found_name}\t beta: {founds_instances[key].beta}\t alpha: {founds_instances[key].alpha}')
 
-c = al.Chart(to_graph).mark_bar().encode(
-        x='Stock',
-        y='Beta')
 
-st.altair_chart(c)
+beta_chart = graph.bar_chart('Stock', 'Beta', 'Gráfico de distribución de betas')
+alpha_chart = graph.bar_chart('Stock', 'Alpha', 'Gráfico de distribución de alphas de Jensen')
 
 
-a = al.Chart(to_graph).mark_bar().encode(
-        x='Stock',
-        y='Alpha')
-
-st.altair_chart(a)
+st.altair_chart(beta_chart)
+st.altair_chart(alpha_chart)
