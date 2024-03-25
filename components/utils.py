@@ -92,11 +92,11 @@ class graph_data:
                 dx=4
         ).encode(text=color)
 
-        chart = (line + last_price + company_name).encode(
+        config = (line + last_price + company_name).encode(
             x=alt.X().title(independent),
             y=alt.Y().title(dependent)
         )
 
-        return chart
+        return config
 
 
