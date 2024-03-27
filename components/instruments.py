@@ -334,3 +334,71 @@ class Stock:
         corr = self.cumulative_returns.corr('spearman')
 
 
+
+
+class Option:
+
+    def __init__(self,                      # Auto reference
+                 spot, strike,              # Prices
+                 expiration, interval,      # Time of the options
+                 volatility, risk_free):    # Extras
+
+        # Saving variables instances
+        self.spot          = spot
+        self.strike        = strike
+        self.expiration    = expiration
+        self.interval      = interval
+        self.volatility    = volatility
+        self.risk_free     = risk_free
+
+    def pay_off(self, type_option, price):
+        '''
+        Compute and return the pay-off of your option depending
+        of call or put type option.
+
+        ¡Remember the equation!
+        - V(S,t) = max{S - strike_price, 0} -> Call type option
+        - V(S,t) = max{strike_price - S, 0} -> Put type option
+        '''
+
+        if type_option == 'Call':
+            # max{S-K, 0}
+            return max(price-self.strike, 0)
+
+        # If type_option is Put
+        # max{K-S, 0}
+        return max(self.strike-price, 0)
+
+    def compute_UD(self):
+        '''
+        Return D, U changes in the price:
+
+        U = e^(σ*√t)
+        D = e^(-σ*√t) = 1/U
+        '''
+
+        # Computation the exponential part (σ*√t)
+        exponent = self.volatility
+
+        if (self.interval == 'Semana'):
+            exponent *= np.sqrt(5)
+
+        elif (self.interval == 'Mes'):
+            exponent *= np.sqrt(20)
+
+        else:
+            exponent *= np.sqrt(250)
+
+        self.U = np.exp(exponent)
+        self.D = 1/self.U
+
+    def compute_risk_neutral(self):
+        '''
+        Compute the risk neutral probability
+        '''
+        
+        # Compute the risk neuetral probability
+        numerator = (1 + self.risk_free) - self.D
+        denominator = self.U - self.D
+
+        self.risk_neutral = numerator/denominator

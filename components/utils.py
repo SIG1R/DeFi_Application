@@ -1,5 +1,6 @@
 import pandas as pd
 import altair as alt
+import numpy as np
 
 class graph_data:
 
@@ -98,5 +99,3 @@ class graph_data:
         )
 
         return config
-
-
