@@ -342,6 +342,9 @@ class Option:
                  spot, strike,              # Prices
                  expiration, interval,      # Time of the options
                  volatility, risk_free):    # Extras
+        '''
+        This function create a instance about a option instrument.
+        '''
 
         # Saving variables instances
         self.spot          = spot
@@ -351,7 +354,17 @@ class Option:
         self.volatility    = volatility
         self.risk_free     = risk_free
 
-    def pay_off(self, type_option, price):
+        # >>> Converting the risk_free <<<
+        if (self.interval == 'Semana'):
+            self.risk_free = (1 + self.risk_free/100)**(1/52)-1
+            self.risk_free *= 100
+
+
+
+
+
+    @staticmethod
+    def pay_off(type_option:str, price:float, strike:float):
         '''
         Compute and return the pay-off of your option depending
         of call or put type option.
@@ -363,11 +376,11 @@ class Option:
 
         if type_option == 'Call':
             # max{S-K, 0}
-            return max(price-self.strike, 0)
+            return max(price - strike, 0)
 
         # If type_option is Put
         # max{K-S, 0}
-        return max(self.strike-price, 0)
+        return max(strike - price, 0)
 
     def compute_UD(self):
         '''
@@ -391,6 +404,13 @@ class Option:
 
         self.U = np.exp(exponent)
         self.D = 1/self.U
+
+    def convert_rate(self):
+
+        if (self.interval == 'Semana'):
+            self.new_rate = (1 + self.risk_free)**(1/52)-1
+        
+
 
     def compute_risk_neutral(self):
         '''

@@ -29,7 +29,6 @@ current_option = Option(spot_price, strike_price,
     
 current_option.compute_UD()
 current_option.compute_risk_neutral()
-current_pay_off = current_option.pay_off(type_option, 40)
 
 st.write(f'Price Spot: {current_option.spot}')
 st.write(f'Price Strike: {current_option.strike}')
@@ -37,13 +36,21 @@ st.write(f'Volatility: {current_option.volatility}')
 st.write(f'Risk Free: {current_option.risk_free}')
 st.write(f'Expiration: {current_option.expiration}')
 st.write(f'Interval: {current_option.interval}')
-st.write(f'Type option: {type_option} --> pay-off {current_pay_off}')
 st.write(f'U: {current_option.U}')
 st.write(f'D: {current_option.D}')
 st.write(f'Prob risk neutral: {current_option.risk_neutral}')
 
 
 
+from components.stochastic import Binomial_Tree as BT
 
 
-#st.write(func())
+binomial = BT(current_option.spot)
+
+st.write(binomial.func(2,
+                     current_option.risk_neutral,
+                     current_option.U,
+                     current_option.D,
+                       type_option
+
+    ))
