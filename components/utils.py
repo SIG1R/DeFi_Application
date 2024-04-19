@@ -99,3 +99,15 @@ class graph_data:
         )
 
         return config
+
+def compute_instrument(Instrument, *args):
+
+    #instance = Instrument(spot_price, strike_price,
+    #                  expiration_time, interval_time,
+    #                  volatility, risk_free 
+    #                 )
+    
+    #instance = Instrument(*args)
+
+    #return instance
+    print(*args)

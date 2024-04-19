@@ -49,6 +49,9 @@ class Black_Scholes:
     
         '''
 
+        if (self.option.interval == 'Semana'):
+            self.option.volatility *= np.sqrt(5)
+        
         # >>> Compute D´s <<<
         ln = np.log(self.option.spot/self.option.strike)
         risk_premiun = self.option.risk_free /100
@@ -59,10 +62,8 @@ class Black_Scholes:
         # Complete risk_premiun by d1
         risk_premiun_d2 = risk_premiun - 0.5 * self.option.volatility**2
         
-        denominator = self.option.volatility*(4**0.5)
+        denominator = self.option.volatility*(self.option.expiration**0.5)
 
-        #if (self.option.interval == 'Semana'):
-        #    denominator *= np.sqrt(5)
 
         #elif (self.option.interval == 'Mes'):
         #    denominator *= np.sqrt(20)
@@ -89,8 +90,19 @@ class Black_Scholes:
             self.prob_d2 = norm.cdf(self.d2)
             self.payoff =   self.option.strike*np.exp(-self.option.risk_free/100*self.option.expiration)*self.prob_d2 - self.option.spot*self.prob_d1
 
+    def merton(self, lambda_, v_jump, ITER, type_option):
+        
+        fact = 1
+        value = 0
+        initial_spot = self.option.spot
+        for i in range(ITER):
+            fact *= i
+            poisson = np.exp(-lambda_*self.option.expiration)*(lambda_*self.option.expiration)**i / fact 
+            self.option.spot = initial_spot*np.exp(-lambda_*v_jump*self.option.expiration)
+             
+
+            value += poisson*self.pay_off(type_option)
+        return value
 
 
-class Merton(Black_Scholes):
-    def __init__(self):
-        pass
+

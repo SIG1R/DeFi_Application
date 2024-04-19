@@ -410,6 +410,9 @@ class Option:
         if (self.interval == 'Semana'):
             self.new_rate = (1 + self.risk_free)**(1/52)-1
         
+        elif (self.interval == 'Mes'):
+            self.new_rate = (1 + self.risk_free)**(1/52)-1
+
 
 
     def compute_risk_neutral(self):
