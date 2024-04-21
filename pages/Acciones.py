@@ -22,108 +22,83 @@ stocks_available = pd.read_csv(archivo_csv)
 
 stocks_instances = dict()
 
-with st.expander('Parámetros de las acciones'):
 
-    st.write('#### Establezca las caracteristicas de las acciones')
+st.write('#### Establezca las caracteristicas de las acciones')
 
-    stock_symbol_list = st.multiselect(
-        'Seleccione las acciones a analizar',
-        stocks_available['Symbol']
+stock_symbol_list = st.multiselect(
+    'Seleccione las acciones a analizar',
+    stocks_available['Company Name']
+)
+
+for stock_name in stock_symbol_list:
+
+    stock_symbol = stocks_available[stocks_available['Company Name']==stock_name] 
+    stock_symbol = stock_symbol['Symbol'].to_list()[0]
+
+    stocks_instances[stock_symbol] = Stock(stock_symbol)
+
+
+start_date_column, end_date_column = st.columns(2)
+
+with start_date_column:
+
+    start_date = st.date_input(
+        'Fecha de inicio',
+        format = 'DD/MM/YYYY',
+        value = dt.date(2024,1,1)
     )
+
+
+with end_date_column:
+
+    end_date = st.date_input(
+        'Fecha de cierre',
+        format = 'DD/MM/YYYY'
+)
+
     
-    for instance in stock_symbol_list:
-        stocks_instances[instance] = Stock(instance)
-
-
-    start_date_column, end_date_column = st.columns(2)
-
-    with start_date_column:
-
-        start_date = st.date_input(
-            'Fecha de inicio',
-            format = 'DD/MM/YYYY',
-            value = dt.date(2024,1,1)
-        )
-
-
-    with end_date_column:
-
-        end_date = st.date_input(
-            'Fecha de cierre',
-            format = 'DD/MM/YYYY'
-    )
-
-        
-    for key in stocks_instances.keys():
-        stocks_instances[key].get_data(start_date, end_date)
-        stocks_instances[key].calculate_returns()
+for key in stocks_instances.keys():
+    stocks_instances[key].get_data(start_date, end_date)
+    stocks_instances[key].calculate_returns()
 
 
 # Graph individual summary per stock
 st.write('## Individual stock summary')
-with st.expander('SHOW SUMMARY'):
-    for key in stocks_instances.keys():
-        
-        st.write(f'### {key}')
-        col1, col2, col3 = st.columns(3)
-        col1.metric(
-                label = 'Highest price',
-                value = round(stocks_instances[key].history['High'][-1],4), 
-                delta = round(stocks_instances[key].history['High'][-1]
-                          -stocks_instances[key].history['High'][-2],4)
-        )
-
-        col2.metric(
-                label = 'Lowest price',
-                value = round(stocks_instances[key].history['Low'][-1],4), 
-                delta = round(stocks_instances[key].history['Low'][-1]
-                          -stocks_instances[key].history['Low'][-2],4)
-        )
-
-        col3.metric(
-                label = 'Close price',
-                value = round(stocks_instances[key].history['Close'][-1],4), 
-                delta = round(stocks_instances[key].history['Close'][-1]
-                          -stocks_instances[key].history['Close'][-2],4)
-        )
+for key in stocks_instances.keys():
+    
+    
+    st.metric(
+            label = key,
+            value = round(stocks_instances[key].history['Close'][-1],4), 
+            delta = round(stocks_instances[key].history['Close'][-1]
+                      -stocks_instances[key].history['Close'][-2],4)
+    )
 
         #st.table(stocks_instances[key].history)
 
 
-
-
-
-
-
-
-
-
-
-# Graph line plot
-st.write('## Trend history')
-with st.expander('SHOW GRAPH'):
     
-    source = graph_data('Symbol', 'Date', 'Returns')
+source = graph_data('Symbol', 'Date', 'Returns')
+
+for key in stocks_instances.keys():
+
+    # Get cumulative returns
+    stock_data = stocks_instances[key].cumulative_returns
+
+    # Create new transaction
+    # Symbo, Date, Returns
+    row = {
+        'Symbol': key,
+        'Date': stock_data['Date'],
+        'Returns': stock_data['Close']
+    }
     
-    for key in stocks_instances.keys():
+    # Adding transaction to dataframe
+    source.add_row(pd.DataFrame(row))
 
-        # Get cumulative returns
-        stock_data = stocks_instances[key].cumulative_returns
-
-        # Create new transaction
-        # Symbo, Date, Returns
-        row = {
-            'Symbol': key,
-            'Date': stock_data['Date'],
-            'Returns': stock_data['Close']
-        }
-        
-        # Adding transaction to dataframe
-        source.add_row(pd.DataFrame(row))
-
-    # Plotting line chart (trend returns)
-    trend_chart = source.trend_chart('Date', 'Returns', 'Symbol', 'Crecimiento en los retornos acumulados')
-    st.altair_chart(trend_chart)
+# Plotting line chart (trend returns)
+trend_chart = source.trend_chart('Date', 'Returns', 'Symbol', 'Crecimiento en los retornos acumulados')
+st.altair_chart(trend_chart)
 
 
 
@@ -133,41 +108,34 @@ with st.expander('SHOW GRAPH'):
 
 
 # Graph heatmap corr plot
-st.write('## Correlation between closes prices')
-
 df = pd.DataFrame()
 
-with st.expander('SHOW GRAPH'):
-    st.write('Coming soon')
+
+for key in stock_symbol_list:
 
 
-    for key in stock_symbol_list:
-        df[key] = stocks_instances[key].cumulative_returns['Close']
-    correlation = df.corr(method='pearson')
-    correlation = correlation.stack().reset_index()
-    correlation.columns = ['S1','S2','Correlation']
+    stock_symbol = stocks_available[stocks_available['Company Name']==key] 
+    stock_symbol = stock_symbol['Symbol'].to_list()[0]
 
-    # Crear el heatmap con Altair
-    heatmap = alt.Chart(correlation).mark_rect().encode(
-        x='S1:O',
-        y='S2:O',
-        color='Correlation:Q'
-    ).properties(
-        width=400,
-        height=400,
-        title='Correlation Heatmap of Fruits'
-    )
+    df[stock_symbol] = stocks_instances[stock_symbol].cumulative_returns['Close']
+correlation = df.corr(method='pearson')
+correlation = correlation.stack().reset_index()
+correlation.columns = ['S1','S2','Correlation']
 
-    # Rotar etiquetas del eje x para una mejor visualización
-    heatmap = heatmap.configure_axisX(labelAngle=-45)
+# Crear el heatmap con Altair
+heatmap = alt.Chart(correlation).mark_rect().encode(
+    x='S1:O',
+    y='S2:O',
+    color='Correlation:Q'
+).properties(
+    width=500,
+    height=400,
+    title='Correlation Heatmap of Fruits'
+)
 
-    # Display the chart
-    st.write("Heatmap of Fruit Prices")
-    st.altair_chart(heatmap)
+# Rotar etiquetas del eje x para una mejor visualización
+heatmap = heatmap.configure_axisX(labelAngle=-45)
 
-
-
-
-
-
+# Display the chart
+st.altair_chart(heatmap)
 

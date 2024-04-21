@@ -399,13 +399,17 @@ class Option:
         elif (self.interval == 'Mes'):
             exponent *= np.sqrt(20)
 
-        else:
+        elif (self.interval == 'Año'):
             exponent *= np.sqrt(250)
 
         self.U = np.exp(exponent)
         self.D = 1/self.U
 
     def convert_rate(self):
+
+
+        if (self.expiration == 0):
+            pass
 
         if (self.interval == 'Semana'):
             self.new_rate = (1 + self.risk_free)**(1/52)-1

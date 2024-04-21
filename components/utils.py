@@ -72,7 +72,9 @@ class graph_data:
         base = alt.Chart(self.dataframe).encode(
             alt.Color(color).legend(None)
         ).properties(
-            title = title
+            title = title,
+            width = 700,
+            height = 400
         )
         
         # Adding lines chart
